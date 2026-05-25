@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shark Tank Grupo EPM - Clean Edition (con Logos)</title>
+    <title>Shark Tank Energía Grupo EPM - Clean Edition (con Logos)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
@@ -1396,13 +1396,207 @@ footer{
     }
 }
 
+/* =========================================
+   NUEVOS ESTILOS: ENSA/HET, variantes EPM,
+   bloqueo de evaluador y observaciones
+========================================= */
+
+.company-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column;
+}
+
+.ensa-het-badge {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    background: var(--epm-green);
+    color: #FFF;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0,168,89,0.25);
+}
+
+.epm-variant-label {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    right: 4px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    color: var(--epm-green-dark);
+    background: rgba(255,255,255,0.92);
+    padding: 4px 6px;
+    border-radius: 8px;
+    line-height: 1.2;
+    letter-spacing: 0.2px;
+}
+
+/* Estado de evaluador bloqueado */
+.evaluator-locked .input-text,
+.evaluator-locked select.input-text {
+    background: #F1F5F9 !important;
+    color: var(--text-heading) !important;
+    cursor: not-allowed;
+    border-color: var(--border-light) !important;
+    font-weight: 700;
+}
+
+.evaluator-info-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(0,168,89,0.08), rgba(0,168,89,0.02));
+    border: 1px solid rgba(0,168,89,0.25);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.evaluator-info-bar.active {
+    display: flex;
+}
+
+.evaluator-info-bar .info-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-heading);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.evaluator-info-bar .info-text i {
+    color: var(--epm-green);
+    font-size: 16px;
+}
+
+.evaluator-info-bar .info-text strong {
+    color: var(--epm-green-dark);
+}
+
+.evaluator-info-bar .badge-categoria {
+    background: var(--epm-green);
+    color: #FFF;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.evaluator-info-bar .badge-categoria.publico {
+    background: var(--epm-blue);
+}
+
+.btn-change-evaluator {
+    background: transparent;
+    border: 1px solid var(--border-medium);
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-change-evaluator:hover {
+    border-color: var(--epm-green);
+    color: var(--epm-green-dark);
+    background: #F0FDF4;
+}
+
+/* Selector de categoría tipo pill */
+.category-pill-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 768px) {
+    .category-pill-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Observaciones textarea */
+.observaciones-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 14px rgba(15,23,42,.04);
+}
+
+.observaciones-card label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--text-heading);
+    margin-bottom: 18px;
+}
+
+.observaciones-card label i {
+    color: #FFF;
+    background: var(--epm-green);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.observaciones-textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 16px 18px;
+    border-radius: 12px !important;
+    border: 1px solid var(--border-medium) !important;
+    background: #FFFFFF;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.observaciones-textarea:focus {
+    border-color: var(--epm-green) !important;
+    box-shadow: 0 0 0 3px rgba(0, 168, 89, 0.15) !important;
+}
+
 </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="title-section">
-                <h1>Shark Tank <span>EPM</span></h1>
+                <h1>Shark Tank Energía <span>Grupo EPM</span></h1>
                 <p><i class="fa-solid fa-chart-bar" style="margin-right: 5px;"></i> Dashboard de Evaluación</p>
             </div>
             <div class="logos">
@@ -1418,11 +1612,39 @@ footer{
 
         <!-- TAB 1: EVALUACIÓN -->
         <div id="evaluacion" class="view-section active">
+
+            <!-- Barra informativa cuando el evaluador ya está registrado -->
+            <div class="evaluator-info-bar" id="evaluatorInfoBar">
+                <div class="info-text">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Evaluador: <strong id="evaluatorNameDisplay">—</strong></span>
+                    <span class="badge-categoria" id="categoriaBadge">SHARK</span>
+                    <span style="color: var(--text-muted); font-weight: 600;" id="evalCountDisplay">0 calificaciones registradas</span>
+                </div>
+                <button type="button" class="btn-change-evaluator" onclick="resetEvaluator()">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Cambiar evaluador
+                </button>
+            </div>
+
             <form id="evaluationForm">
-                <div class="setup-panel">
-                    <div class="form-group">
+                <div class="setup-panel" id="setupPanel">
+                    <div class="form-group" id="evaluatorNameGroup">
                         <label><i class="fa-solid fa-user-tie"></i> Nombre del Evaluador</label>
                         <input type="text" id="evaluatorName" class="input-text" placeholder="Ej. Jose Daniel Jurado" required>
+                    </div>
+
+                    <div class="form-group" id="categoriaGroup">
+                        <label><i class="fa-solid fa-id-card"></i> Categoría</label>
+                        <div class="category-pill-grid">
+                            <div class="pill-item">
+                                <input type="radio" name="categoria" id="cat_Shark" value="SHARK" required>
+                                <label for="cat_Shark"><i class="fa-solid fa-crown" style="margin-right:6px;"></i>SHARK</label>
+                            </div>
+                            <div class="pill-item">
+                                <input type="radio" name="categoria" id="cat_Publico" value="Público" required>
+                                <label for="cat_Publico"><i class="fa-solid fa-users" style="margin-right:6px;"></i>Público</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -1442,6 +1664,13 @@ footer{
                 </div>
 
                 <div id="criteriaContainer"></div>
+
+                <!-- Cuadro de observaciones al final de la calificación -->
+                <div class="observaciones-card">
+                    <label for="observaciones"><i class="fa-solid fa-comment-dots"></i> Observaciones </label>
+                    <textarea id="observaciones" class="observaciones-textarea" placeholder="Comparte tus comentarios, recomendaciones o aspectos a destacar del proyecto evaluado..."></textarea>
+                </div>
+
                 <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Consolidar Calificación</button>
             </form>
         </div>
@@ -1494,20 +1723,51 @@ const companyLogos = {
 
 const companiesList = ["EPM", "CENS", "CHEC", "EDEQ", "AFINIA", "ESSA", "ENSA", "EPM GUATEMALA", "DEL SUR"];
 
+// Mapping de empresas por segmento
+const companiesBySegment = {
+    "Generación": ["EPM", "CHEC", "ESSA", "ENSA", "EPM GUATEMALA", "DEL SUR", "CENS", "EDEQ"],
+    "Transmisión": ["EPM", "CENS", "ESSA", "EPM GUATEMALA"],
+    "Distribución": ["EPM", "CENS", "CHEC", "EDEQ", "AFINIA", "ESSA", "ENSA", "EPM GUATEMALA", "DEL SUR"],
+    "Comercialización": ["EPM_ENERGIA", "EPM_CLIENTE", "CENS", "CHEC", "EDEQ", "AFINIA", "ESSA", "ENSA", "EPM GUATEMALA", "DEL SUR"]
+};
+
+// Etiquetas personalizadas para variantes de EPM en Comercialización
+const companyDisplayLabels = {
+    "EPM_ENERGIA": "EPM Comercial Energía",
+    "EPM_CLIENTE": "EPM Comercial Cliente/Usuario"
+};
+
+// Mapeo de empresa a logo base (para variantes de EPM usar el logo de EPM)
+function getLogoKey(emp) {
+    if (emp === "EPM_ENERGIA" || emp === "EPM_CLIENTE") return "epm";
+    return emp.replace(/\s+/g, '').toLowerCase();
+}
+
         let evaluationData = {};
         const criteriaList = [
             { id: 'c1', title: '1. Alineación Estratégica', d1: 'Desconectado del propósito.', d5: 'Pilar que transforma el futuro.' },
-            { id: 'c2', title: '2. Viabilidad Técnica y Financiera', d1: 'Inviable o riesgo alto.', d5: 'Retorno superior y disruptivo.' },
-            { id: 'c3', title: '3. Integración Territorial', d1: 'Impacto negativo.', d5: 'Legado positivo y sostenible.' },
-            { id: 'c4', title: '4. Métricas y Trazabilidad', d1: 'Sin KPIs ni control.', d5: 'Trazabilidad total e IA.' },
-            { id: 'c5', title: '5. Innovación', d1: 'Modelo convencional.', d5: 'Modelo disruptivo y nuevo.' },
-            { id: 'c6', title: '6. Calidad del Pitch', d1: 'Deficiente y confuso.', d5: 'Nivel Shark Tank: Impecable.' }
+            { id: 'c2', title: '2. Viabilidad Técnica', d1: 'Inviable técnicamente o riesgo alto.', d5: 'Robustez técnica y ejecución impecable.' },
+            { id: 'c3', title: '3. Viabilidad Financiera', d1: 'Sin retorno o financieramente inviable.', d5: 'Retorno superior y modelo financiero sólido.' },
+            { id: 'c4', title: '4. Impacto Territorial', d1: 'Impacto negativo en el territorio.', d5: 'Legado positivo y sostenible.' },
+            { id: 'c5', title: '5. Métricas y Trazabilidad', d1: 'Sin KPIs ni control.', d5: 'Trazabilidad total.' },
+            { id: 'c6', title: '6. Innovación', d1: 'Modelo convencional.', d5: 'Modelo disruptivo y nuevo.' },
+            { id: 'c7', title: '7. Encaje Político y Regulatorio', d1: 'Choca con el marco regulatorio o político.', d5: 'Alineado y potenciado por el marco político y regulatorio.' },
+            { id: 'c8', title: '8. Calidad del Pitch', d1: 'Deficiente y confuso.', d5: 'Nivel Shark Tank: Impecable.' }
         ];
 
         function init() {
             renderCompanies();
             renderCriteria();
             updateRanking();
+            setupSegmentChangeListener();
+            setupEvaluatorLock();
+        }
+
+        // Listener para repoblar empresas cuando cambia el segmento
+        function setupSegmentChangeListener() {
+            document.querySelectorAll('input[name="segmento"]').forEach(radio => {
+                radio.addEventListener('change', renderCompanies);
+            });
         }
 
         
@@ -1517,9 +1777,31 @@ function renderCompanies() {
 
     grid.className = 'company-grid';
 
-    grid.innerHTML = companiesList.map(emp => {
+    // Obtener segmento seleccionado
+    const segSelected = document.querySelector('input[name="segmento"]:checked');
+    let list = companiesList;
+    if (segSelected && companiesBySegment[segSelected.value]) {
+        list = companiesBySegment[segSelected.value];
+    } else {
+        // Si no hay segmento seleccionado, mostrar mensaje
+        grid.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--text-muted); font-weight: 600; background: #F8FAFC; border-radius: 14px; border: 1px dashed var(--border-medium);">
+            <i class="fa-solid fa-arrow-up" style="margin-right: 8px; color: var(--epm-green);"></i>
+            Selecciona primero un Segmento Estratégico para ver las empresas disponibles.
+        </div>`;
+        return;
+    }
+
+    grid.innerHTML = list.map(emp => {
 
         const id = emp.replace(/\s+/g, '').toLowerCase();
+        const logoKey = getLogoKey(emp);
+        const displayLabel = companyDisplayLabels[emp] || emp;
+        // Para ENSA mostrar etiqueta /HET superpuesta
+        const ensaBadge = (emp === "ENSA") ? '<div class="ensa-het-badge">/HET</div>' : '';
+        // Para variantes EPM mostrar etiqueta personalizada debajo
+        const epmVariantLabel = (emp === "EPM_ENERGIA" || emp === "EPM_CLIENTE")
+            ? `<div class="epm-variant-label">${displayLabel}</div>`
+            : '';
 
         return `
 
@@ -1535,11 +1817,15 @@ function renderCompanies() {
 
             <label for="form_${id}">
 
-                <img
-                    src="${companyLogos[id]}"
-                    class="company-logo-premium"
-                    alt="${emp}"
-                >
+                <div class="company-card-inner">
+                    <img
+                        src="${companyLogos[logoKey]}"
+                        class="company-logo-premium"
+                        alt="${emp === 'ENSA' ? 'ENSA' : displayLabel}"
+                    >
+                    ${ensaBadge}
+                    ${epmVariantLabel}
+                </div>
 
             </label>
 
@@ -1563,22 +1849,116 @@ function renderCriteria() {
             `).join('');
         }
 
+        // Estado global del evaluador (persiste entre calificaciones)
+        let currentEvaluator = { name: '', categoria: '', locked: false, count: 0 };
+
+        function setupEvaluatorLock() {
+            // Pre-llenar si ya existe estado (por si recarga durante la sesión)
+            applyEvaluatorState();
+        }
+
+        function applyEvaluatorState() {
+            const bar = document.getElementById('evaluatorInfoBar');
+            const nameGroup = document.getElementById('evaluatorNameGroup');
+            const catGroup = document.getElementById('categoriaGroup');
+            const setupPanel = document.getElementById('setupPanel');
+            const nameInput = document.getElementById('evaluatorName');
+            const catInputs = document.querySelectorAll('input[name="categoria"]');
+
+            if (currentEvaluator.locked) {
+                // Mostrar barra informativa y ocultar campos de evaluador/categoría
+                bar.classList.add('active');
+                document.getElementById('evaluatorNameDisplay').textContent = currentEvaluator.name;
+                const badge = document.getElementById('categoriaBadge');
+                badge.textContent = currentEvaluator.categoria.toUpperCase();
+                badge.classList.toggle('publico', currentEvaluator.categoria === 'Público');
+                document.getElementById('evalCountDisplay').textContent =
+                    `${currentEvaluator.count} calificación${currentEvaluator.count === 1 ? '' : 'es'} registrada${currentEvaluator.count === 1 ? '' : 's'}`;
+                nameGroup.style.display = 'none';
+                catGroup.style.display = 'none';
+                setupPanel.classList.add('evaluator-locked');
+                // Quitar required de campos ocultos para evitar errores de validación HTML5
+                nameInput.removeAttribute('required');
+                catInputs.forEach(i => i.removeAttribute('required'));
+            } else {
+                bar.classList.remove('active');
+                nameGroup.style.display = '';
+                catGroup.style.display = '';
+                setupPanel.classList.remove('evaluator-locked');
+                // Restaurar required
+                nameInput.setAttribute('required', '');
+                catInputs.forEach(i => i.setAttribute('required', ''));
+            }
+        }
+
+        function resetEvaluator() {
+            if (confirm('¿Seguro que deseas cambiar de evaluador? Las calificaciones registradas se mantienen en el ranking.')) {
+                currentEvaluator = { name: '', categoria: '', locked: false, count: 0 };
+                document.getElementById('evaluationForm').reset();
+                applyEvaluatorState();
+                renderCompanies();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
         document.getElementById('evaluationForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const evaluator = document.getElementById('evaluatorName').value;
+
+            // Si el evaluador no está bloqueado, capturar nombre y categoría
+            if (!currentEvaluator.locked) {
+                const nameField = document.getElementById('evaluatorName');
+                const catField = document.querySelector('input[name="categoria"]:checked');
+                if (!nameField.value.trim()) {
+                    nameField.focus();
+                    return;
+                }
+                if (!catField) {
+                    alert('Por favor selecciona una categoría (SHARK o Público).');
+                    return;
+                }
+                currentEvaluator.name = nameField.value.trim();
+                currentEvaluator.categoria = catField.value;
+                currentEvaluator.locked = true;
+            }
+
             const segmento = document.querySelector('input[name="segmento"]:checked').value;
             const empresa = document.querySelector('input[name="empresa"]:checked').value;
+            const observaciones = document.getElementById('observaciones').value.trim();
             const key = `${empresa}-${segmento}`;
+
             let total = 0;
             criteriaList.forEach(c => total += parseInt(document.querySelector(`input[name="${c.id}"]:checked`).value));
-            const avg = parseFloat((total / 6).toFixed(1));
+            const avg = parseFloat((total / criteriaList.length).toFixed(1));
+
             if (!evaluationData[key]) evaluationData[key] = [];
-            evaluationData[key].push({ eval: evaluator, score: avg });
-            this.reset();
+            evaluationData[key].push({
+                eval: currentEvaluator.name,
+                categoria: currentEvaluator.categoria,
+                score: avg,
+                observaciones: observaciones
+            });
+
+            currentEvaluator.count++;
+
+            // Reset solo de campos de calificación, manteniendo evaluador
+            document.querySelectorAll('input[name="segmento"]').forEach(r => r.checked = false);
+            document.querySelectorAll('input[name="empresa"]').forEach(r => r.checked = false);
+            criteriaList.forEach(c => {
+                document.querySelectorAll(`input[name="${c.id}"]`).forEach(r => r.checked = false);
+            });
+            document.getElementById('observaciones').value = '';
+
+            applyEvaluatorState();
+            renderCompanies();
             window.scrollTo({ top: 0, behavior: 'smooth' });
             showToast();
             updateRanking();
         });
+
+        // Etiqueta amigable para mostrar nombre de empresa (variantes EPM)
+        function getDisplayName(emp) {
+            return companyDisplayLabels[emp] || emp;
+        }
 
         function updateRanking() {
             const filter = document.querySelector('input[name="filterSeg"]:checked')?.value || 'Resultado Global';
@@ -1594,17 +1974,18 @@ function renderCriteria() {
             results.sort((a, b) => b.avg - a.avg);
             const tbody = document.getElementById('rankingBody');
             tbody.innerHTML = results.length ? results.map((item, i) => {
-                const id = item.emp.replace(/\s+/g, '').toLowerCase();
-                const initials = item.emp.substring(0,2).toUpperCase();
+                const displayName = getDisplayName(item.emp);
+                const logoKey = getLogoKey(item.emp);
+                const initials = displayName.substring(0,2).toUpperCase();
                 return `
                 <tr class="ranking-row" onclick="toggleDetails('${item.key}')">
                     <td class="rank-number ${i<3 ? 'rank-'+(i+1) : ''}">${i+1}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="${companyLogos[id] || ''}" style="width: 36px; height: 36px; object-fit: contain; object-position: center top;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <img src="${companyLogos[logoKey] || ''}" style="width: 36px; height: 36px; object-fit: contain; object-position: center top;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="emp-avatar" style="display: none; width: 36px; height: 36px; font-size: 13px; margin: 0;">${initials}</div>
                             <div>
-                                <div style="font-weight: 800; color: var(--text-heading);">${item.emp}</div>
+                                <div style="font-weight: 800; color: var(--text-heading);">${displayName}</div>
                                 <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">${item.seg}</div>
                             </div>
                         </div>
@@ -1614,7 +1995,18 @@ function renderCriteria() {
                 </tr>
                 <tr class="details-row" id="det-${item.key}"><td colspan="4"><div class="details-container">
                     <div style="font-size: 13px; font-weight: 800; color: var(--epm-green-dark); margin-bottom: 10px;">HISTORIAL:</div>
-                    ${item.evals.map(ev => `<div class="evaluator-item"><span style="font-weight: 600;">${ev.eval}</span><span style="font-weight: 900; color: var(--epm-green);">${ev.score.toFixed(1)}</span></div>`).join('')}
+                    ${item.evals.map(ev => `
+                        <div class="evaluator-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:10px;">
+                                <span style="font-weight: 600;">
+                                    ${ev.eval}
+                                    ${ev.categoria ? `<span style="margin-left:8px; font-size:10px; background:${ev.categoria === 'Público' ? 'var(--epm-blue)' : 'var(--epm-green)'}; color:#FFF; padding:2px 8px; border-radius:6px; font-weight:800; letter-spacing:0.5px;">${ev.categoria.toUpperCase()}</span>` : ''}
+                                </span>
+                                <span style="font-weight: 900; color: var(--epm-green);">${ev.score.toFixed(1)}</span>
+                            </div>
+                            ${ev.observaciones ? `<div style="font-size: 12px; color: var(--text-muted); font-style: italic; padding: 6px 10px; background: #F8FAFC; border-left: 3px solid var(--epm-green-light); border-radius: 6px; width: 100%; box-sizing: border-box;"><i class="fa-solid fa-quote-left" style="margin-right:6px; opacity:0.5;"></i>${ev.observaciones}</div>` : ''}
+                        </div>
+                    `).join('')}
                 </div></td></tr>
             `}).join('') : `<tr><td colspan="4" style="text-align:center; padding:50px;">No hay datos para <b>${filter}</b> aún.</td></tr>`;
         }
