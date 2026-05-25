@@ -1667,7 +1667,7 @@ footer{
 
                 <!-- Cuadro de observaciones al final de la calificación -->
                 <div class="observaciones-card">
-                    <label for="observaciones"><i class="fa-solid fa-comment-dots"></i> Observaciones </label>
+                    <label for="observaciones"><i class="fa-solid fa-comment-dots"></i> Observaciones (Opcional)</label>
                     <textarea id="observaciones" class="observaciones-textarea" placeholder="Comparte tus comentarios, recomendaciones o aspectos a destacar del proyecto evaluado..."></textarea>
                 </div>
 
@@ -1686,11 +1686,24 @@ footer{
                     <div class="pill-item"><input type="radio" name="filterSeg" id="flt_Dis" value="Distribución" onchange="updateRanking()"><label for="flt_Dis">Distribución</label></div>
                     <div class="pill-item"><input type="radio" name="filterSeg" id="flt_Com" value="Comercialización" onchange="updateRanking()"><label for="flt_Com">Comercialización</label></div>
                 </div>
+
+                <!-- Leyenda de ponderación -->
+                <div style="margin-top: 16px; padding: 12px 16px; background: linear-gradient(135deg, rgba(0,168,89,0.06), rgba(0,51,160,0.04)); border: 1px solid var(--border-light); border-radius: 12px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-family: 'Montserrat', sans-serif;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; color: var(--text-heading); text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fa-solid fa-scale-balanced" style="color: var(--epm-green);"></i> Ponderación del puntaje:
+                    </div>
+                    <span style="font-size: 12px; background: var(--epm-green); color: #FFF; padding: 5px 12px; border-radius: 8px; font-weight: 800; letter-spacing: 0.5px;">
+                        <i class="fa-solid fa-crown" style="margin-right: 4px;"></i>SHARK 90%
+                    </span>
+                    <span style="font-size: 12px; background: var(--epm-blue); color: #FFF; padding: 5px 12px; border-radius: 8px; font-weight: 800; letter-spacing: 0.5px;">
+                        <i class="fa-solid fa-users" style="margin-right: 4px;"></i>Público 10%
+                    </span>
+                </div>
             </div>
 
             <div class="table-responsive">
                 <table class="ranking-table">
-                    <thead><tr><th style="text-align: center; width: 60px;">Pos</th><th>Empresa</th><th>Puntaje</th><th style="text-align: center; width: 80px;">Votos</th></tr></thead>
+                    <thead><tr><th style="text-align: center; width: 60px;">Pos</th><th>Empresa</th><th>Puntaje Ponderado</th><th style="text-align: center; width: 80px;">Votos</th></tr></thead>
                     <tbody id="rankingBody"></tbody>
                 </table>
             </div>
@@ -1721,6 +1734,48 @@ const companyLogos = {
 
 
 
+// ============================================================
+// CONFIGURACIÓN DE GOOGLE SHEETS
+// ------------------------------------------------------------
+// 1) Crea tu Google Sheet y despliega el Apps Script (ver instrucciones).
+// 2) Pega aquí la URL del Web App (termina en /exec).
+// 3) Si dejas la cadena vacía "" la app sigue funcionando solo en local.
+// ============================================================
+const GOOGLE_SHEETS_WEB_APP_URL = ""; // <-- PEGA AQUÍ TU URL
+
+// ============================================================
+// PESOS DE CATEGORÍAS PARA EL RANKING PONDERADO
+// ------------------------------------------------------------
+// El puntaje final de cada proyecto se calcula como:
+//   puntaje = (promedio_SHARK * peso_SHARK) + (promedio_Publico * peso_Publico)
+// Si solo existe una categoría, ese promedio se toma al 100%.
+// ============================================================
+const CATEGORY_WEIGHTS = {
+    "SHARK": 0.90,
+    "Público": 0.10
+};
+
+// Envía un payload al endpoint de Apps Script.
+// Usa mode 'no-cors' para evitar problemas de CORS con Apps Script.
+// Devuelve una promesa que nunca rechaza (los errores se logean en consola).
+function sendToGoogleSheets(payload) {
+    if (!GOOGLE_SHEETS_WEB_APP_URL) {
+        console.log('[Sheets] URL no configurada, omitiendo envío.');
+        return Promise.resolve({ skipped: true });
+    }
+    return fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+    })
+    .then(() => ({ ok: true }))
+    .catch(err => {
+        console.error('[Sheets] Error de red al enviar:', err);
+        return { ok: false, error: err };
+    });
+}
+
 const companiesList = ["EPM", "CENS", "CHEC", "EDEQ", "AFINIA", "ESSA", "ENSA", "EPM GUATEMALA", "DEL SUR"];
 
 // Mapping de empresas por segmento
@@ -1749,7 +1804,7 @@ function getLogoKey(emp) {
             { id: 'c2', title: '2. Viabilidad Técnica', d1: 'Inviable técnicamente o riesgo alto.', d5: 'Robustez técnica y ejecución impecable.' },
             { id: 'c3', title: '3. Viabilidad Financiera', d1: 'Sin retorno o financieramente inviable.', d5: 'Retorno superior y modelo financiero sólido.' },
             { id: 'c4', title: '4. Impacto Territorial', d1: 'Impacto negativo en el territorio.', d5: 'Legado positivo y sostenible.' },
-            { id: 'c5', title: '5. Métricas y Trazabilidad', d1: 'Sin KPIs ni control.', d5: 'Trazabilidad total.' },
+            { id: 'c5', title: '5. Métricas y Trazabilidad', d1: 'Sin KPIs ni control.', d5: 'Trazabilidad total e IA.' },
             { id: 'c6', title: '6. Innovación', d1: 'Modelo convencional.', d5: 'Modelo disruptivo y nuevo.' },
             { id: 'c7', title: '7. Encaje Político y Regulatorio', d1: 'Choca con el marco regulatorio o político.', d5: 'Alineado y potenciado por el marco político y regulatorio.' },
             { id: 'c8', title: '8. Calidad del Pitch', d1: 'Deficiente y confuso.', d5: 'Nivel Shark Tank: Impecable.' }
@@ -1927,7 +1982,12 @@ function renderCriteria() {
             const key = `${empresa}-${segmento}`;
 
             let total = 0;
-            criteriaList.forEach(c => total += parseInt(document.querySelector(`input[name="${c.id}"]:checked`).value));
+            const scoresByCriterion = {};
+            criteriaList.forEach(c => {
+                const v = parseInt(document.querySelector(`input[name="${c.id}"]:checked`).value);
+                scoresByCriterion[c.id] = v;
+                total += v;
+            });
             const avg = parseFloat((total / criteriaList.length).toFixed(1));
 
             if (!evaluationData[key]) evaluationData[key] = [];
@@ -1939,6 +1999,26 @@ function renderCriteria() {
             });
 
             currentEvaluator.count++;
+
+            // ===== Envío a Google Sheets (asíncrono, no bloquea la UI) =====
+            const payload = {
+                evaluador: currentEvaluator.name,
+                categoria: currentEvaluator.categoria,
+                segmento: segmento,
+                empresa: getDisplayName(empresa), // nombre legible para variantes EPM
+                empresa_codigo: empresa,          // código interno (útil para filtros en Sheets)
+                c1: scoresByCriterion.c1,
+                c2: scoresByCriterion.c2,
+                c3: scoresByCriterion.c3,
+                c4: scoresByCriterion.c4,
+                c5: scoresByCriterion.c5,
+                c6: scoresByCriterion.c6,
+                c7: scoresByCriterion.c7,
+                c8: scoresByCriterion.c8,
+                promedio: avg,
+                observaciones: observaciones
+            };
+            sendToGoogleSheets(payload);
 
             // Reset solo de campos de calificación, manteniendo evaluador
             document.querySelectorAll('input[name="segmento"]').forEach(r => r.checked = false);
@@ -1960,6 +2040,44 @@ function renderCriteria() {
             return companyDisplayLabels[emp] || emp;
         }
 
+        // Calcula el puntaje ponderado de un proyecto a partir de sus evaluaciones.
+        // Devuelve { weighted, sharkAvg, publicoAvg, sharkCount, publicoCount }.
+        function calculateWeightedScore(evals) {
+            const groups = { "SHARK": [], "Público": [] };
+            evals.forEach(ev => {
+                const cat = ev.categoria || "SHARK"; // fallback para registros antiguos
+                if (groups[cat]) groups[cat].push(ev.score);
+            });
+
+            const sharkArr = groups["SHARK"];
+            const publicoArr = groups["Público"];
+            const sharkAvg = sharkArr.length ? sharkArr.reduce((a, b) => a + b, 0) / sharkArr.length : null;
+            const publicoAvg = publicoArr.length ? publicoArr.reduce((a, b) => a + b, 0) / publicoArr.length : null;
+
+            // Aplicar pesos solo sobre las categorías que tienen votos
+            let weightedSum = 0;
+            let totalWeight = 0;
+            if (sharkAvg !== null) {
+                weightedSum += sharkAvg * CATEGORY_WEIGHTS["SHARK"];
+                totalWeight += CATEGORY_WEIGHTS["SHARK"];
+            }
+            if (publicoAvg !== null) {
+                weightedSum += publicoAvg * CATEGORY_WEIGHTS["Público"];
+                totalWeight += CATEGORY_WEIGHTS["Público"];
+            }
+            const weighted = totalWeight > 0
+                ? weightedSum / totalWeight
+                : evals.reduce((a, b) => a + b.score, 0) / evals.length;
+
+            return {
+                weighted: weighted,
+                sharkAvg: sharkAvg,
+                publicoAvg: publicoAvg,
+                sharkCount: sharkArr.length,
+                publicoCount: publicoArr.length
+            };
+        }
+
         function updateRanking() {
             const filter = document.querySelector('input[name="filterSeg"]:checked')?.value || 'Resultado Global';
             let results = [];
@@ -1967,8 +2085,8 @@ function renderCriteria() {
                 const [emp, seg] = key.split('-');
                 if (filter === 'Resultado Global' || seg === filter) {
                     const evals = evaluationData[key];
-                    const avg = evals.reduce((a, b) => a + b.score, 0) / evals.length;
-                    results.push({ key, emp, seg, avg, evals });
+                    const breakdown = calculateWeightedScore(evals);
+                    results.push({ key, emp, seg, avg: breakdown.weighted, evals, breakdown });
                 }
             });
             results.sort((a, b) => b.avg - a.avg);
@@ -1977,6 +2095,14 @@ function renderCriteria() {
                 const displayName = getDisplayName(item.emp);
                 const logoKey = getLogoKey(item.emp);
                 const initials = displayName.substring(0,2).toUpperCase();
+                const bd = item.breakdown;
+                // Mini desglose junto al puntaje
+                const breakdownChips = `
+                    <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+                        ${bd.sharkAvg !== null ? `<span style="font-size:10px; background:rgba(0,168,89,0.12); color:var(--epm-green-dark); padding:2px 8px; border-radius:6px; font-weight:800; letter-spacing:0.3px;"><i class="fa-solid fa-crown" style="margin-right:4px;"></i>SHARK ${bd.sharkAvg.toFixed(1)} <span style="opacity:.6;">(${bd.sharkCount})</span></span>` : ''}
+                        ${bd.publicoAvg !== null ? `<span style="font-size:10px; background:rgba(0,51,160,0.10); color:var(--epm-blue); padding:2px 8px; border-radius:6px; font-weight:800; letter-spacing:0.3px;"><i class="fa-solid fa-users" style="margin-right:4px;"></i>Público ${bd.publicoAvg.toFixed(1)} <span style="opacity:.6;">(${bd.publicoCount})</span></span>` : ''}
+                    </div>
+                `;
                 return `
                 <tr class="ranking-row" onclick="toggleDetails('${item.key}')">
                     <td class="rank-number ${i<3 ? 'rank-'+(i+1) : ''}">${i+1}</td>
@@ -1990,7 +2116,11 @@ function renderCriteria() {
                             </div>
                         </div>
                     </td>
-                    <td><div style="font-weight: 900;">${item.avg.toFixed(1)} <span style="font-size:11px; opacity: 0.5;">/ 5.0</span></div><div class="progress-track"><div class="progress-fill" style="width: ${(item.avg/5)*100}%;"></div></div></td>
+                    <td>
+                        <div style="font-weight: 900;">${item.avg.toFixed(1)} <span style="font-size:11px; opacity: 0.5;">/ 5.0</span></div>
+                        <div class="progress-track"><div class="progress-fill" style="width: ${(item.avg/5)*100}%;"></div></div>
+                        ${breakdownChips}
+                    </td>
                     <td style="text-align: center;"><span style="background: #F1F5F9; border: 1px solid var(--border-medium); padding: 6px 12px; border-radius: 12px; font-size: 12px;">${item.evals.length}</span></td>
                 </tr>
                 <tr class="details-row" id="det-${item.key}"><td colspan="4"><div class="details-container">
