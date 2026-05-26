@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1777,6 +1776,64 @@ function sendToGoogleSheets(payload) {
     });
 }
 
+// ============================================================
+// LECTURA DE DATOS DESDE GOOGLE SHEETS
+// ------------------------------------------------------------
+// Hace GET al Web App de Apps Script (acción=getAll) y devuelve
+// el listado de filas guardadas. Si falla por red o porque la URL
+// no está configurada, devuelve un array vacío.
+// ============================================================
+function fetchFromGoogleSheets() {
+    if (!GOOGLE_SHEETS_WEB_APP_URL) {
+        console.log('[Sheets] URL no configurada, no se consultan datos remotos.');
+        return Promise.resolve([]);
+    }
+    const url = GOOGLE_SHEETS_WEB_APP_URL + '?action=getAll&t=' + Date.now();
+    return fetch(url, { method: 'GET' })
+        .then(r => r.json())
+        .then(data => Array.isArray(data) ? data : (data && Array.isArray(data.rows) ? data.rows : []))
+        .catch(err => {
+            console.error('[Sheets] Error al leer datos remotos:', err);
+            return [];
+        });
+}
+
+// Reconstruye el objeto evaluationData (key = "EMPRESA-SEGMENTO")
+// a partir de las filas crudas que vienen del Sheets.
+function rebuildEvaluationDataFromRows(rows) {
+    const data = {};
+    rows.forEach(r => {
+        // Tolerar nombres de columnas con o sin tilde, mayúsculas/minúsculas
+        const segmento = r.segmento || r.Segmento || '';
+        const empresa = r.empresa_codigo || r.empresaCodigo || r['Código Empresa'] || r.empresa || r.Empresa || '';
+        const evalName = r.evaluador || r.Evaluador || '';
+        const categoria = r.categoria || r['Categoría'] || r.Categoria || '';
+        const promedio = parseFloat(r.promedio !== undefined ? r.promedio : r.Promedio);
+        const observaciones = r.observaciones || r.Observaciones || '';
+        if (!empresa || !segmento || isNaN(promedio)) return;
+        const key = `${empresa}-${segmento}`;
+        if (!data[key]) data[key] = [];
+        data[key].push({
+            eval: evalName,
+            categoria: categoria,
+            score: promedio,
+            observaciones: observaciones
+        });
+    });
+    return data;
+}
+
+// Carga los datos desde Sheets y refresca el ranking.
+// Se llama al iniciar la app y antes de mostrar el dashboard.
+function syncDashboardFromSheets() {
+    return fetchFromGoogleSheets().then(rows => {
+        if (rows && rows.length > 0) {
+            evaluationData = rebuildEvaluationDataFromRows(rows);
+        }
+        if (typeof updateRanking === 'function') updateRanking();
+    });
+}
+
 const companiesList = ["EPM", "CENS", "CHEC", "EDEQ", "AFINIA", "ESSA", "ENSA", "EPM GUATEMALA", "DEL SUR"];
 
 // Mapping de empresas por segmento
@@ -1817,6 +1874,8 @@ function getLogoKey(emp) {
             updateRanking();
             setupSegmentChangeListener();
             setupEvaluatorLock();
+            // Cargar datos remotos del Sheets si la URL está configurada
+            syncDashboardFromSheets();
         }
 
         // Listener para repoblar empresas cuando cambia el segmento
@@ -2020,6 +2079,8 @@ function renderCriteria() {
                 observaciones: observaciones
             };
             sendToGoogleSheets(payload);
+            // Tras enviar, intentar refrescar desde el Sheets (delay para dar tiempo al servidor)
+            setTimeout(() => { syncDashboardFromSheets(); }, 1500);
 
             // Reset solo de campos de calificación, manteniendo evaluador
             document.querySelectorAll('input[name="segmento"]').forEach(r => r.checked = false);
@@ -2148,6 +2209,10 @@ function renderCriteria() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             event.currentTarget.classList.add('active');
+            // Refrescar el dashboard al abrir la pestaña de ranking
+            if (id === 'ranking') {
+                syncDashboardFromSheets();
+            }
         }
         function showToast() { const t = document.getElementById('successToast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
         init();
