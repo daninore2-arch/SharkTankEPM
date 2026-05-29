@@ -251,6 +251,21 @@
             font-family: 'Montserrat', sans-serif; display: flex; justify-content: center; align-items: center; gap: 12px;
         }
 
+        .btn-submit:disabled {
+            background: #94A3B8;
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.85;
+        }
+
+        .btn-submit .spinner-icon {
+            animation: btn-spin 1s linear infinite;
+        }
+        @keyframes btn-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         /* TAB 2: RANKING */
         .dashboard-header { margin-bottom: 30px; background: #F8FAFC; padding: 14px; border-radius: 20px; border: 1px solid var(--border-light); }
         
@@ -1671,7 +1686,7 @@ footer{
                     <textarea id="observaciones" class="observaciones-textarea" placeholder="Comparte tus comentarios, recomendaciones o aspectos a destacar del proyecto evaluado..."></textarea>
                 </div>
 
-                <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Consolidar Calificación</button>
+                <button type="submit" id="btnSubmit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> <span class="btn-submit-text">Consolidar Calificación</span></button>
             </form>
         </div>
 
@@ -1741,7 +1756,7 @@ const companyLogos = {
 // 2) Pega aquí la URL del Web App (termina en /exec).
 // 3) Si dejas la cadena vacía "" la app sigue funcionando solo en local.
 // ============================================================
-const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzTQsmdDhMmzwGfEo2mxqZVtg3ugH2dG6JZmQp1RdN5Fm_yY-c4rQOwWx-jTySdoIzV/exec"; // <-- PEGA AQUÍ TU URL
+const GOOGLE_SHEETS_WEB_APP_URL = ""; // <-- PEGA AQUÍ TU URL
 
 // ============================================================
 // PESOS DE CATEGORÍAS PARA EL RANKING PONDERADO
@@ -2016,8 +2031,27 @@ function renderCriteria() {
             }
         }
 
-        document.getElementById('evaluationForm').addEventListener('submit', function(e) {
+        // Flag de envío en curso (defensa adicional contra dobles envíos)
+        let isSubmitting = false;
+
+        // Helpers para bloquear/desbloquear el botón de envío
+        function lockSubmitButton() {
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch spinner-icon"></i> <span class="btn-submit-text">Enviando...</span>';
+        }
+
+        function unlockSubmitButton() {
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span class="btn-submit-text">Consolidar Calificación</span>';
+        }
+
+        document.getElementById('evaluationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            // Defensa contra dobles clics: si ya hay un envío en curso, ignorar
+            if (isSubmitting) return;
 
             // Si el evaluador no está bloqueado, capturar nombre y categoría
             if (!currentEvaluator.locked) {
@@ -2050,17 +2084,11 @@ function renderCriteria() {
             });
             const avg = parseFloat((total / criteriaList.length).toFixed(1));
 
-            if (!evaluationData[key]) evaluationData[key] = [];
-            evaluationData[key].push({
-                eval: currentEvaluator.name,
-                categoria: currentEvaluator.categoria,
-                score: avg,
-                observaciones: observaciones
-            });
+            // === BLOQUEAR UI antes de enviar ===
+            isSubmitting = true;
+            lockSubmitButton();
 
-            currentEvaluator.count++;
-
-            // ===== Envío a Google Sheets (asíncrono, no bloquea la UI) =====
+            // ===== Envío a Google Sheets (con await para esperar respuesta) =====
             const payload = {
                 evaluador: currentEvaluator.name,
                 categoria: currentEvaluator.categoria,
@@ -2078,7 +2106,23 @@ function renderCriteria() {
                 promedio: avg,
                 observaciones: observaciones
             };
-            sendToGoogleSheets(payload);
+
+            try {
+                await sendToGoogleSheets(payload);
+            } catch (err) {
+                console.error('[Submit] Error al enviar:', err);
+            }
+
+            // Registrar localmente solo después de intentar el envío
+            if (!evaluationData[key]) evaluationData[key] = [];
+            evaluationData[key].push({
+                eval: currentEvaluator.name,
+                categoria: currentEvaluator.categoria,
+                score: avg,
+                observaciones: observaciones
+            });
+            currentEvaluator.count++;
+
             // Tras enviar, intentar refrescar desde el Sheets (delay para dar tiempo al servidor)
             setTimeout(() => { syncDashboardFromSheets(); }, 1500);
 
@@ -2095,6 +2139,10 @@ function renderCriteria() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             showToast();
             updateRanking();
+
+            // === LIBERAR UI ===
+            isSubmitting = false;
+            unlockSubmitButton();
         });
 
         // Etiqueta amigable para mostrar nombre de empresa (variantes EPM)
