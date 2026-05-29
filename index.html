@@ -2375,6 +2375,31 @@ h1, h2, h3, .brand-font,
     }
 }
 
+
+.criteria-weight {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--epm-green-dark);
+    background: rgba(0, 168, 89, 0.10);
+    border: 1px solid rgba(0, 168, 89, 0.20);
+    padding: 6px 10px;
+    border-radius: 999px;
+    letter-spacing: .4px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .criteria-title {
+        align-items: flex-start !important;
+    }
+    .criteria-weight {
+        margin-left: 0;
+        margin-top: 4px;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -2643,14 +2668,13 @@ function getLogoKey(emp) {
 
         let evaluationData = {};
         const criteriaList = [
-            { id: 'c1', title: '1. Alineación Estratégica', d1: 'Desconectado del propósito.', d5: 'Pilar que transforma el futuro.' },
-            { id: 'c2', title: '2. Viabilidad Técnica', d1: 'Inviable técnicamente o riesgo alto.', d5: 'Robustez técnica y ejecución impecable.' },
-            { id: 'c3', title: '3. Viabilidad Financiera', d1: 'Sin retorno o financieramente inviable.', d5: 'Retorno superior y modelo financiero sólido.' },
-            { id: 'c4', title: '4. Impacto Territorial', d1: 'Impacto negativo en el territorio.', d5: 'Legado positivo y sostenible.' },
-            { id: 'c5', title: '5. Métricas y Trazabilidad', d1: 'Sin KPIs ni control.', d5: 'Trazabilidad total e IA.' },
-            { id: 'c6', title: '6. Innovación', d1: 'Modelo convencional.', d5: 'Modelo disruptivo y nuevo.' },
-            { id: 'c7', title: '7. Encaje Político y Regulatorio', d1: 'Choca con el marco regulatorio o político.', d5: 'Alineado y potenciado por el marco político y regulatorio.' },
-            { id: 'c8', title: '8. Calidad del Pitch', d1: 'Deficiente y confuso.', d5: 'Nivel Shark Tank: Impecable.' }
+            { id: 'c1', weight: 20, title: '1. Viabilidad técnica', d1: 'Inviable técnicamente, con riesgos altos de implementación y sin soporte en capacidades internas.', d5: 'Idea con solidez técnica, apalanca las capacidades del Grupo EPM y tiene potencial de escalabilidad.' },
+            { id: 'c2', weight: 20, title: '2. Viabilidad financiera', d1: 'Sin retorno y/o financieramente inviable.', d5: 'Retorno superior, modelo financiero adecuado y con generación de valor económico sostenible.' },
+            { id: 'c3', weight: 15, title: '3. Impacto territorial', d1: 'Impacto negativo en comunidades, ambiente o reputación del Grupo.', d5: 'Impacto positivo y sostenible en la calidad de vida, protección del ambiente y la reputación territorial.' },
+            { id: 'c4', weight: 15, title: '4. Innovación', d1: 'Modelo convencional, sin diferenciación ni aporte innovador.', d5: 'Modelo disruptivo, nuevo y transformador, con potencial de posicionar los negocios de Energía del Grupo como referente.' },
+            { id: 'c5', weight: 15, title: '5. Posibilidad de ajuste de la idea al marco regulatorio actual o factibilidad con ajustes regulatorios', d1: 'Desarticulación con el marco regulatorio.', d5: 'Alineado con el marco regulatorio, contribuye a políticas públicas y normativas del sector.' },
+            { id: 'c6', weight: 10, title: '6. Alineación estratégica', d1: 'La idea está desconectada del direccionamiento estratégico, propuesta de valor y estrategia competitiva del segmento.', d5: 'Alineada en su totalidad con el direccionamiento estratégico del Grupo, propuesta de valor y estrategia competitiva del segmento.' },
+            { id: 'c7', weight: 5, title: '7. Calidad del pitch', d1: 'Deficiente, confuso, sin narrativa ni conexión con el jurado y el público.', d5: 'Excelente, justificación clara de la idea e inspirador.' }
         ];
 
         function init() {
@@ -2740,7 +2764,7 @@ function renderCriteria() {
             const container = document.getElementById('criteriaContainer');
             container.innerHTML = criteriaList.map(c => `
                 <div class="criteria-card">
-                    <div class="criteria-title"><i class="fa-solid fa-chart-pie"></i> ${c.title}</div>
+                    <div class="criteria-title"><i class="fa-solid fa-chart-pie"></i> <span>${c.title}</span><span class="criteria-weight">${c.weight} pts</span></div>
                     <div class="scale-options">
                         ${[1,2,3,4,5].map(v => `<label class="scale-option"><input type="radio" name="${c.id}" value="${v}" required><div class="scale-circle">${v}</div></label>`).join('')}
                     </div>
@@ -2845,14 +2869,15 @@ function renderCriteria() {
             const observaciones = document.getElementById('observaciones').value.trim();
             const key = `${empresa}-${segmento}`;
 
-            let total = 0;
+            let weightedTotal = 0;
             const scoresByCriterion = {};
+            const totalWeight = criteriaList.reduce((sum, c) => sum + c.weight, 0);
             criteriaList.forEach(c => {
                 const v = parseInt(document.querySelector(`input[name="${c.id}"]:checked`).value);
                 scoresByCriterion[c.id] = v;
-                total += v;
+                weightedTotal += v * c.weight;
             });
-            const avg = parseFloat((total / criteriaList.length).toFixed(1));
+            const avg = parseFloat((weightedTotal / totalWeight).toFixed(1));
 
             // === BLOQUEAR UI antes de enviar ===
             isSubmitting = true;
@@ -2872,7 +2897,6 @@ function renderCriteria() {
                 c5: scoresByCriterion.c5,
                 c6: scoresByCriterion.c6,
                 c7: scoresByCriterion.c7,
-                c8: scoresByCriterion.c8,
                 promedio: avg,
                 observaciones: observaciones
             };
